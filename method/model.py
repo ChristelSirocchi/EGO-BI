@@ -80,7 +80,12 @@ def get_xgboost_model(
     scale_pos_weight=None,
     constrained=True,
     seed=42,
-    ntrees=1000
+    ntrees=1000,
+    max_depth=6,
+    learning_rate=0.05,
+    subsample=0.8,
+    colsample_bytree=0.8,
+    n_jobs=None
 ):
 
     n_features = X_train.shape[1]
@@ -90,14 +95,17 @@ def get_xgboost_model(
     else:
         monotone_constraints = None
 
+    extra_kwargs = {} if n_jobs is None else {"n_jobs": n_jobs}
+
     return XGBClassifier(
         n_estimators=ntrees,
-        max_depth=6,
-        learning_rate=0.05,
-        subsample=0.8,
-        colsample_bytree=0.8,
+        max_depth=max_depth,
+        learning_rate=learning_rate,
+        subsample=subsample,
+        colsample_bytree=colsample_bytree,
         monotone_constraints=monotone_constraints,
         scale_pos_weight=scale_pos_weight,
+        **extra_kwargs,
         random_state=seed,
         eval_metric="logloss"
     )
