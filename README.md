@@ -70,19 +70,17 @@ Scripts in `method/` implement the core boundary-aware learning framework.
 
 Scripts in `validation/` evaluate the robustness, stability, and interpretability of the method.
 
-### `compute_composition.py`
-- Analyses feature composition of boundary datasets.
+### `compute_hardness_performance.py`
+- Computes per-patient hardness from out-of-fold prediction confidence of an unconstrained model.
+- Saves to `results/hardness/{dataset}/{exp_name}/performance_hardness_oof.csv`.
 
-### `prune_composition.py`
-- Evaluates stability of feature selection under dataset pruning.
-- Tests robustness to reduced or perturbed neighbourhood graphs.
+### `compute_hardness_disjunct.py`
+- Computes per-patient hardness from decision-tree disjuncts (disjunct size / tree depth), independent of the KNN/trajectory-distance construction used by the main method.
+- Saves to `results/hardness/{dataset}/{exp_name}/disjunct_hardness_oof.csv`.
 
-### `compute_performance.py`
-- Measures sample difficulty based on unconstrained model performance.
-
-### `prune_performance.py`
-- Evaluates model robustness under progressive data pruning.
-- Assesses performance degradation across reduced boundary samples.
+### `prune.py`
+- Progressively drops the easiest training samples per fold and retrains, tracking how feature importance shifts as only harder cases remain.
+- `--criterion {performance, disjunct}` selects which precomputed hardness file to prune by (run the matching `compute_hardness_*.py` first); `--disjunct-measure {DS, TD}` selects the disjunct sub-measure.
 
 ### `train_linear.py`
 - Trains linear baseline models on the same boundary datasets.
