@@ -2,7 +2,21 @@
 
 This repository implements a boundary-aware feature analysis framework for identifying variables that drive outcome divergence in clinically similar patient profiles. The method combines patient similarity modelling, K-nearest neighbour (KNN) neighbourhood extraction, and constrained tree-based learning on boundary-derived feature differences.
 
-The pipeline is designed for longitudinal ICU datasets and is evaluated on PhysioNet 2012, MIMIC-III, and eICU.
+## Pipeline Overview
+
+The framework identifies features driving outcome divergence among clinically similar patients by combining two representations: a **trajectory-space** representation (raw per-variable time series) used to model patient similarity and build neighbourhoods, and a **summary-space** representation (window/statistic-level features) used to characterise and score each patient.
+
+1. **Ego-network construction.** Pairwise trajectory distances define a *k*-nearest-neighbour ego-network per patient (train and test neighbourhoods always built with respect to the training set; *k* chosen via cross-validation). Neighbourhoods containing only one outcome are homogeneous and discarded; neighbourhoods containing both outcomes are **boundary regions** — areas of local uncertainty where similar patients diverge — and are the only valid queries going forward.
+
+2. **Boundary dataset construction.** For each valid query, neighbours are split by outcome agreement. Feature-wise absolute differences (|Δ|) between the query and each partition's neighbours are aggregated via a distance-weighted mean, yielding one same-outcome and one different-outcome sample per query, each carrying a training weight reflecting how balanced (boundary-like) that neighbourhood is.
+
+3. **Monotonic constrained ensemble.** A monotonicity-constrained gradient-boosted tree ensemble is trained on this boundary-weighted dataset to distinguish same- from different-outcome neighbourhood comparisons — an auxiliary task, distinct from predicting the clinical outcome itself. Constraints enforce that larger feature differences can only increase (never decrease) the predicted probability of outcome divergence.
+
+4. **Importance and rule extraction.** Feature importances from the ensemble, plus threshold rules from a constrained decision tree, identify which variables drive divergence and the |Δ| thresholds at which they become discriminative.
+
+Relative to the earlier pairwise formulation, this reduces tuning to a single neighbourhood size *k*, removes heuristic pair selection, avoids combinatorial pair growth, and gives a deterministic, leakage-free construction from local ego-networks.
+
+![Pipeline overview](docs/egobi_overview.pdf)
 
 ---
 
