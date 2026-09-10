@@ -1,4 +1,4 @@
-# EGO-BI: Boundary-Aware Feature Analysis for Clinical Trajectories
+# EGO-BI: Ego-network Boundary Importance for Clinical Trajectories
 
 This repository implements a boundary-aware feature analysis framework for identifying variables that drive outcome divergence in clinically similar patient profiles. The method combines patient similarity modelling, K-nearest neighbour (KNN) neighbourhood extraction, and constrained tree-based learning on boundary-derived feature differences.
 
